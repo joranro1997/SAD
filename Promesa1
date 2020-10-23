@@ -1,0 +1,7 @@
+function myPromise(res, time){
+    return new Promise((resolve, reject) => {if (!res) reject(new Error("Fracaso"));
+        setTimeout(resolve, time, "Tuvo Exito")}
+    )
+}
+
+myPromise(true, 5000).then(console.log, console.log)
