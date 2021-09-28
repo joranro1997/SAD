@@ -1,0 +1,60 @@
+<script>
+class Cart {
+    
+    constructor(name, items) {
+      this.name = name;
+      this.items = items;
+    }
+
+    addItem(item){
+    	var items = this.items;
+        items.push(item);
+        console.log(item+' added to the cart');
+    }
+
+    checkItem(item){
+        var found = false;
+        var items = this.items;
+        items.forEach((x) => {if(x == item){
+            found = true;
+          };
+        });
+        if(found){
+        	alert(item + ' has been found in the cart');
+        }else{
+        	alert(item + ' has not been found in the cart');
+        };
+    }
+
+    removeItem(item){
+    	var items = this.items;
+        var index = 0;
+        for (let i = 0; i<items.length; i++) {
+            if(items[i] == item){
+                index = items[i].indexOf();
+            };
+        }
+        if(index !== 0){items.splice(index); console.log(item+' removed from the cart');}
+        else{console.log('item not found in cart');}
+    }
+  
+    toString(){
+      alert('This cart is called ' + this.name + ' and has the following items in it: ' + this.items);
+    }
+  
+}
+
+let cart = new Cart('cart1', ['pizza', 'beer'])
+
+cart.addItem('melon');
+
+cart.toString();
+
+cart.checkItem('melon');
+
+cart.removeItem('pizza');
+
+cart.checkItem('melon');
+
+cart.toString();
+</script>
