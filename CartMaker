@@ -28,14 +28,14 @@ class Cart {
 
     removeItem(item){
     	var items = this.items;
-        var index = 0;
+        var index = -1;
         for (let i = 0; i<items.length; i++) {
             if(items[i] == item){
-                index = items[i].indexOf();
+                index = items.indexOf(item);
             };
         }
-        if(index !== 0){items.splice(index); console.log(item+' removed from the cart');}
-        else{console.log('item not found in cart');}
+        if(index !== -1){items.splice(index,1); alert(item +' removed from the cart');}
+        else{alert(item + ' not found in cart');}
     }
   
     toString(){
