@@ -1,5 +1,4 @@
-<script>
-class Cart {
+module.exports = class Cart {
     
     constructor(name, items) {
       this.name = name;
@@ -20,9 +19,9 @@ class Cart {
           };
         });
         if(found){
-        	alert(item + ' has been found in the cart');
+        	console.log(item + ' has been found in the cart');
         }else{
-        	alert(item + ' has not been found in the cart');
+        	console.log(item + ' has not been found in the cart');
         };
     }
 
@@ -34,27 +33,12 @@ class Cart {
                 index = items.indexOf(item);
             };
         }
-        if(index !== -1){items.splice(index,1); alert(item +' removed from the cart');}
-        else{alert(item + ' not found in cart');}
+        if(index !== -1){items.splice(index,1); console.log(item +' removed from the cart');}
+        else{console.log(item + ' not found in cart');}
     }
   
     toString(){
-      alert('This cart is called ' + this.name + ' and has the following items in it: ' + this.items);
+      console.log('This cart is called ' + this.name + ' and has the following items in it: ' + this.items);
     }
   
 }
-
-let cart = new Cart('cart1', ['pizza', 'beer'])
-
-cart.addItem('melon');
-
-cart.toString();
-
-cart.checkItem('melon');
-
-cart.removeItem('pizza');
-
-cart.checkItem('melon');
-
-cart.toString();
-</script>
