@@ -7,9 +7,11 @@ module.exports = class StockDb {
     }
 
     interactWithDb(func) {
+        //connecting to mongoDB instance, when connection is established method returns client object which is used to interact with database
         this.mongoclient.connect(this.url).then((client) => {
             const db = client.db("shop");
 
+            //getting list of existing collections, to check if the one used in the example already exists, if not new collection with index is created 
             db.listCollections().toArray().then((docs) => {
                 if(!docs.map(doc => doc.name).includes('products')) {
                     db.createCollection('products').then(() => {
@@ -18,6 +20,7 @@ module.exports = class StockDb {
                         console.log(err);
                     });
 
+                    //index to make sure, that there will not be any duplications in th database
                     db.members.createIndex( { "cod": 1 }, { unique: true } )
                 }
             }).catch((err) => {
@@ -25,15 +28,17 @@ module.exports = class StockDb {
             });
 
             func(db,client);
-            
+
         }).catch((err) => {
             throw err;
         });
     }
 
+    //method to insert pre specified good to database
     insertGoods(db, client) {
         var collection = db.collection('products');
         let query = { _id: 1 };
+        //check if products are already added, if not products are added to the database
         collection.findOne(query).then((res) => {
             if(res == null) {
                 collection.insertMany([
@@ -44,9 +49,12 @@ module.exports = class StockDb {
         });
     }
 
+    //checks if stock of specified good is not empty
     checkGoods(good, db, client) {
         var collection = db.collection('products');
+        //query to spceify what good we want to check
         let query = { desc: good };
+        //searching for the specified good
         collection.findOne(query).then((result) => {
             if(result.stock) {
                 console.log({product: good, success: "Exists"});
