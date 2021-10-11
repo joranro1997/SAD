@@ -17,12 +17,17 @@ module.exports = class Cart {
 //The array is checked in search of the specified item.
     checkItem(item){
         var found = false;
+        var BreakException = {};
         var items = this.items;
-        items.forEach((x) => {if(x == item){
-            found = true;
-            break;
-          };
-        });
+        try {
+        	items.forEach((x) => {if(x == item){
+            		found = true;
+            		throw BreakException;
+          		};
+        	});
+        } catch (e) {
+        	if (e !== BreakException) throw e;
+        }
         if(found){
         	console.log(item + ' has been found in the cart');
         }else{
