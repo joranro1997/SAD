@@ -1,10 +1,10 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var typing = false;
-var timeout = undefined;
+const typingUsers = [];
 const usrs = [];
 const usrList = [];
+const usrsMap = [];
 
 app.get('/', function(req, res){
 	res.sendFile(__dirname + '/index.html');
@@ -16,9 +16,13 @@ io.on('connection', function(socket){
   var myid = socket.id;
   console.log('User ' + usr + ' connected');
   usrs.push(myid);
+  usrsMap.push({usr: usr, id: myid});
   usrs.forEach((element) => {if(element !== myid) {
   		io.sockets.connected[element].emit('chat message', 'User ' + usr + ' logged in.');
   }});
+  usrs.forEach((element) => {
+    io.sockets.connected[element].emit('loggedUsers', usrList);
+  });
   io.sockets.connected[myid].emit('chat message', 'Welcome to this chatroom. Your username is: ' + usr);
   io.sockets.connected[myid].emit('chat message', 'There is currently ' + usrs.length + ' users in the chat: ' + usrList);
   io.emit('usrid', myid);
@@ -36,34 +40,80 @@ io.on('connection', function(socket){
     		usrList.splice(i,1);
     	}
     }
-  });
-  
-  socket.on('typingMessage', function(usrid){
-  	usrs.forEach((element) => {if(element !== usrid) {
-  		io.sockets.connected[element].emit('showText');
-  	}
+    
+    for(let i = 0; i < typingUsers.length; i++) {
+    	if(typingUsers[i] == usr) {
+    		typingUsers.splice(i,1);
+    	}
+    }
+
+    usrs.forEach((element) => {
+      io.sockets.connected[element].emit('loggedUsers', usrList);
     });
   });
   
-  socket.on('somethingHappened', (usrid) => {
-  	console.log(usrid);
+  socket.on('keyPressed', () => {
+    if(typingUsers.length == 0) {
+      typingUsers.push(usr);
+        usrs.forEach((element) => {if(element !== myid) {
+          io.sockets.connected[element].emit('userStartedTyping', usr);
+        }});
+        console.log(usr + 'is typing');
+    } else {
+      for(let i = 0; i < typingUsers.length; i++) {
+        if(typingUsers[i] != usr) {
+          typingUsers.push(usr);
+          usrs.forEach((element) => {if(element !== myid) {
+            io.sockets.connected[element].emit('userStartedTyping', usr);
+          }});
+          console.log(usr + 'is typing');
+        } 
+      }
+    }                                       
   });
-  
-  socket.on('noLongerTypingMessage', function(usrid){
-  	usrs.forEach((element) => {if(element !== usrid) {
-  		io.sockets.connected[element].emit('hideText');
-  	}
-    });
+    
+  socket.on('noLongerTypingMessage', function(){
+    for(let i = 0; i < typingUsers.length; i++) {
+      if(typingUsers[i] == usr) {
+        typingUsers.splice(i,1);
+        usrs.forEach((element) => {if(element !== myid) {
+          io.sockets.connected[element].emit('userStopedTyping', usr);
+        }});
+      }
+    }
   });
   
   socket.on('chat message', function(msg){
-  if(msg !== ''){
-    usrs.forEach((element) => {if(element !== myid) {
-  	io.sockets.connected[element].emit('chat message', usr + ': ' + msg);
-  	}//else{printf();}
-    });
-    console.log('message: ' + usr + ': ' + msg);
-    //io.emit('chat message', usr + ': ' + msg);
+    if(msg !== ''){
+      usrs.forEach((element) => {if(element !== myid) {
+        io.sockets.connected[element].emit('chat message', usr + ': ' + msg, usr);
+      }});
+      for(let i = 0; i < typingUsers.length; i++) {
+        if(typingUsers[i] == usr) {
+          typingUsers.splice(i,1);
+        }
+      }
+      console.log('message: ' + usr + ': ' + msg);
+    }
+  });
+
+  socket.on('privateMessage', function(value) {
+    var msg = value.message;
+    var userId = value.userId;
+    if(msg !== ''){
+      usrsMap.forEach((element) => {
+        if(element.id !== myid && element.usr === userId) {
+          io.sockets.connected[element.id].emit('chat message', usr + ': ' + msg, usr);
+      }});
+      for(let i = 0; i < typingUsers.length; i++) {
+        if(typingUsers[i] == usr) {
+          typingUsers.splice(i,1);
+          usrs.forEach((element) => {
+            io.sockets.connected[element].emit('userStopedTyping', usr);
+          });
+        }
+      }
+      console.log('message: ' + usr + ': ' + msg);
     }
   });
 });
@@ -82,3 +132,4 @@ function makeid(length) {
    }
    return result;
 }
+
