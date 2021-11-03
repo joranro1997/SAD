@@ -25,7 +25,6 @@ io.on('connection', function(socket){
   });
   io.sockets.connected[myid].emit('chat message', 'Welcome to this chatroom. Your username is: ' + usr);
   io.sockets.connected[myid].emit('chat message', 'There is currently ' + usrs.length + ' users in the chat: ' + usrList);
-  io.emit('usrid', myid);
   
   socket.on('disconnect', function(){
     console.log(usr + ' disconnected');

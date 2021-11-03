@@ -31,8 +31,6 @@
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
       var socket = io();
-      var usrid = 'empty';
-      var typing = false;
       var timeout = undefined;
       
       $('form').submit(function(){
@@ -66,10 +64,6 @@
 
       socket.on('userStopedTyping', function(userId){
         $('#' + userId + '_typing').remove();
-      });
-      
-      socket.on('usrid', function(usrid){
-        this.usrid = usrid;
       });
       
       function sendLocal(){
