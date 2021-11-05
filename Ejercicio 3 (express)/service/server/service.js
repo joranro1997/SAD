@@ -14,11 +14,11 @@ module.exports = (config) => {
     });
   }
 
-  service.get('/goods/', (req, res, next) => {
+  service.get('/goods', (req, res, next) => {
     mongoclient.connect(url).then((client) => {
       const db = client.db("shop");
       var collection = db.collection('products');
-      
+    
       collection.find({}).toArray(function(err, result) {
         if (err) return res.status(404).json({ result: 'Something went wrong' });
         client.close();

@@ -1,5 +1,5 @@
 {
-  "name": "speakers-service",
+  "name": "backend",
   "version": "1.0.0",
   "description": "A service to manage speakers",
   "scripts": {
@@ -11,7 +11,7 @@
   "dependencies": {
     "axios": "^0.18.0",
     "bunyan": "^1.8.12",
-    "express": "^4.16.4"
+    "express": "^4.17.1"
   },
   "devDependencies": {
     "chai": "^4.2.0",
