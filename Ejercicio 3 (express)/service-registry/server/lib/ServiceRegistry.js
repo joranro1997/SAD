@@ -15,6 +15,10 @@ class ServiceRegistry {
     return candidates[Math.floor(Math.random() * candidates.length)];
   }
 
+  getAll() {
+    return this.services;
+  }
+
   register(name, version, ip, port) {
     this.cleanup();
     const key = name + version + ip + port;
